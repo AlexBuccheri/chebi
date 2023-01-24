@@ -3,6 +3,10 @@
 import numpy as np
 
 
+def unit_vector(u: np.ndarray) -> np.ndarray:
+    return u / np.linalg.norm(u)
+
+
 def projection_operator(u: np.ndarray, v: np.ndarray) -> np.ndarray:
     """Projects the vector v orthogonally onto the line spanned by vector u.
 
@@ -25,16 +29,19 @@ def projection_operator(u: np.ndarray, v: np.ndarray) -> np.ndarray:
     return proj_v_onto_u
 
 
-def classical_gram_schmidt(V: np.ndarray) -> np.ndarray:
+def classical_gram_schmidt(V: np.ndarray, normalise=True) -> np.ndarray:
     """Classical Gram-Schmidt Orthogonalisation.
+
+    Vectors may not quite be orthogonal due to rounding
+    errors.
 
     ADD EQUATION
 
     Orthogonalise a set of vectors V.
 
-    :param V: Set of vectors, stored row-wise
+    :param V: Set of vectors, stored row-wise.
 
-    :return: Matrix of orthogonal vectors.
+    :return: Matrix of orthnormal vectors. (check they're normalised)
     Vectors stored in rows.
     """
     n_vectors = V.shape[0]
@@ -48,6 +55,30 @@ def classical_gram_schmidt(V: np.ndarray) -> np.ndarray:
         proj_u += projection_operator(U[k-1, :], V[k, :])
         U[k, :] = V[k, :] - proj_u[:]
 
+    if normalise:
+        for k in range(0, n_vectors):
+            U[k, :] = unit_vector(U[k, :])
+
     return U
 
 
+def modified_gram_schimdt(V: np.ndarray) -> np.ndarray:
+    """Modified Gram-Schmidt Orthogonalisation.
+
+    This approach gives the same result as the original formula in exact arithmetic
+    and introduces smaller errors in finite-precision arithmetic.
+
+    Used this ref: https://laurenthoeltgen.name/post/gram-schmidt/
+    Wiki's description is really unclear.
+
+    :return:
+    """
+    n_vectors = V.shape[0]
+    U = V
+
+    for j in range(0, n_vectors):
+        U[j, :] = np.linalg.norm(U[j, :])
+        for i in range(j+1, n_vectors):
+            U[i, :] -= np.vdot(U[i, :], U[j, :]) * U[j, :]
+
+    return U
