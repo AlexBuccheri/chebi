@@ -53,9 +53,16 @@ def test_gram_schmidt_with_normalisation():
     assert np.allclose(U.T @ U, np.eye(2), atol=1.e-8)
 
 
-# Not convinced by this routine at al
-# def test_modified_gram_schimdt():
-#     n = 6
-#     V = regularised_hilbert_matrix(n)
-#     U = modified_gram_schimdt(V)
-#     assert np.allclose(U.T @ U, np.eye(n), atol=1.e-8)
+def test_modified_gram_schimdt():
+    n = 6
+    V = regularised_hilbert_matrix(n)
+    U = modified_gram_schimdt(V)
+
+    # Check vectors are orthonormal
+    assert np.allclose(U.T @ U, np.eye(n), atol=1.e-8)
+    print(U.T @ U)
+
+    # Compare to classical method
+    # Gives what looks like junk - makes me wonder if I evaluated correctly
+    # U_c = classical_gram_schmidt(V, normalise=True)
+    # print(U_c.T @ U_c)

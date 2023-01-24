@@ -49,7 +49,7 @@ def classical_gram_schmidt(V: np.ndarray, normalise=True) -> np.ndarray:
     proj_u = np.zeros(shape=V.shape[0])
 
     # First step. u0 = v0
-    U[0, :] = V[0, :]
+    U[0, :] = np.copy(V[0, :])
 
     for k in range(1, n_vectors):
         proj_u += projection_operator(U[k-1, :], V[k, :])
@@ -71,13 +71,15 @@ def modified_gram_schimdt(V: np.ndarray) -> np.ndarray:
     Used this ref: https://laurenthoeltgen.name/post/gram-schmidt/
     Wiki's description is really unclear.
 
+    TODO Flesh out the maths in the description
+
     :return:
     """
     n_vectors = V.shape[0]
-    U = V
+    U = np.copy(V)
 
     for j in range(0, n_vectors):
-        U[j, :] = np.linalg.norm(U[j, :])
+        U[j, :] = unit_vector(U[j, :])
         for i in range(j+1, n_vectors):
             U[i, :] -= np.vdot(U[i, :], U[j, :]) * U[j, :]
 
