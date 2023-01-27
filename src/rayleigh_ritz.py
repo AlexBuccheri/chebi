@@ -76,16 +76,30 @@ def enforce_sign_consistency(eigenvectors: np.ndarray) -> None:
             eigenvectors[:, i] *= -1
 
 
-# TODO(Alex) Test this
-def ritz_pair_accuracy(A, ritz_values, ritz_vectors):
-    """
-    || Ax_i - lambda_i x_i ||
+def ritz_pair_accuracy(A: np.ndarray, ritz_values: np.ndarray, ritz_vectors: np.ndarray) -> np.ndarray:
+    """ Ritz Convergence Criterion.
 
-    ALso look at ~ pg 79 of this: https://core.ac.uk/download/pdf/235413726.pdf
-    :return:
+    convergence = || Ax_i - lambda_i x_i || / ||A||
+
+    See page 77 of [this thesis](https://core.ac.uk/download/pdf/235413726.pdf)
+    for example.
+
+    :return: convergence: Array of convergence values.
     """
-    # TODO Test of vector * matrix gives the correct behaviour
-    # i.e. ritz_values @ ritz_vectors vs
+    norm_A = np.linalg.norm(A)
+    assert norm_A > 0., '||A|| ~ 0'
+
+    n = ritz_values.size
+    weighted_ritz_vectors = np.empty_like(ritz_vectors)
+    # I don't think one can do this operation with matrix multiply
+    for i in range(0, n):
+        weighted_ritz_vectors[:, i] = ritz_values[i] * ritz_vectors[:, i]
+
+    convergence = np.linalg.norm(A @ ritz_vectors - weighted_ritz_vectors, axis=0) / norm_A
+
+    # Loop-based implementation
     # for i in range(0, n):
-    #   ritz_values[i] * ritz_vectors[:, i]
-    np.linalg.norm(A @ ritz_vectors - ritz_values @ ritz_vectors, ord=1, axis=0)
+    #     ritz_vector = ritz_vectors[:, i]
+    #     value_weighted_vector = ritz_values[i] * ritz_vector
+    #     convergence[i] = np.linalg.norm(A @ ritz_vector - value_weighted_vector) / norm_A
+    return convergence
