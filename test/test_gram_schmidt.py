@@ -1,24 +1,9 @@
 import numpy as np
 
-from src.gram_schmidt import unit_vector, classical_gram_schmidt, modified_gram_schimdt
+from src.gram_schmidt import classical_gram_schmidt, modified_gram_schimdt
 
 
-def regularised_hilbert_matrix(n: int) -> np.ndarray:
-    """ Regularised Hilbert Matrix.
 
-    Defined as a square matrix with entries being the unit fractions.
-    Hilbert matrices are canonical examples of ill-conditioned matrices.
-
-    https://en.wikipedia.org/wiki/Hilbert_matrix
-    :param n: Dimensions.
-    :return: H: Hilbert matrix
-    """
-    H = np.empty(shape=(n, n))
-    for i in range(0, n):
-        for j in range(0, n):
-            H[i, j] = 1. /(i + j + 1)
-
-    return H + 0.0001 * np.eye(n)
 
 
 def test_gram_schmidt():

@@ -2,9 +2,7 @@
 """
 import numpy as np
 
-
-def unit_vector(u: np.ndarray) -> np.ndarray:
-    return u / np.linalg.norm(u)
+from src.math_utils import unit_vector
 
 
 def projection_operator(u: np.ndarray, v: np.ndarray) -> np.ndarray:
