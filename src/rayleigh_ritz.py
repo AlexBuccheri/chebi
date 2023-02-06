@@ -3,6 +3,8 @@
 import numpy as np
 import scipy
 
+from src.math_utils import sort_eigenpairs
+
 
 def rayleigh_ritz_pairs(h: np.ndarray, phi: np.ndarray, consistent_sign=True):
     """ Approximate solution of the standard eigenvalue problem
@@ -45,10 +47,12 @@ def rayleigh_ritz_pairs(h: np.ndarray, phi: np.ndarray, consistent_sign=True):
 
     # Solve the Ritz values and eigenvectors of h_hat
     ritz_values, q = scipy.linalg.eigh(h_hat)
-    ritz_values.sort()
 
     # Rotate the basis
     ritz_vectors = phi @ q
+
+    # Sort eigenstates according to eigenvalue ascending order
+    ritz_values, ritz_vectors = sort_eigenpairs(ritz_values, ritz_vectors)
 
     if consistent_sign:
         enforce_sign_consistency(ritz_vectors)
@@ -97,9 +101,4 @@ def ritz_pair_accuracy(A: np.ndarray, ritz_values: np.ndarray, ritz_vectors: np.
 
     convergence = np.linalg.norm(A @ ritz_vectors - weighted_ritz_vectors, axis=0) / norm_A
 
-    # Loop-based implementation
-    # for i in range(0, n):
-    #     ritz_vector = ritz_vectors[:, i]
-    #     value_weighted_vector = ritz_values[i] * ritz_vector
-    #     convergence[i] = np.linalg.norm(A @ ritz_vector - value_weighted_vector) / norm_A
     return convergence
